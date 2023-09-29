@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.pcr-app {
+	z-index: 1 !important;
+
+	@apply !bg-slate-900 shadow;
+}
+
+.pcr-last-color {
+	display: none;
+}
+
+.pcr-color-preview {
+	@apply !rounded-sm;
+}
+
+.pcr-current-color {
+	@apply !h-full !rounded-sm;
+}
+
+.pcr-result {
+	@apply !bg-slate-800 !text-white;
+}
+
+.pcr-app .pcr-interaction .pcr-type.active {
+	@apply !bg-slate-600 !text-white;
+}
