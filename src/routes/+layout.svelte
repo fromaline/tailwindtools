@@ -12,7 +12,9 @@
 			class="mx-4 border-b border-slate-900/10 py-4 dark:border-slate-300/10 lg:mx-0 lg:border-0 lg:px-8"
 		>
 			<div class="flex items-center justify-between">
-				<span class="font-mono text-lg text-white">TailwindTools</span>
+				<a href="/" class="font-mono text-lg text-white hover:underline focus-visible:underline"
+					>TailwindTools</a
+				>
 
 				<a
 					href="https://github.com/fromaline/tailwindtools"
