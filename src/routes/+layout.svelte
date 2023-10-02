@@ -15,7 +15,7 @@
 				<span class="font-mono text-lg text-white">TailwindTools</span>
 
 				<a
-					href="https://github.com/fromaline"
+					href="https://github.com/fromaline/tailwindtools"
 					target="_blank"
 					title="Fromaline's github link"
 					class="outline-none hover:text-white focus-visible:text-white"
