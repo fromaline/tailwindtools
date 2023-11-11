@@ -26,6 +26,10 @@
 						hue: true,
 						interaction: {
 							hex: true,
+							rgba: true,
+							hsla: true,
+							// hsva: true,
+							cmyk: true,
 							input: true,
 						},
 					},

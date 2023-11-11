@@ -10,8 +10,17 @@
 
 	export let data: PageServerData
 
-	const colorsMapping = writable(data.normalizedColors)
-	const getNearestColor = nearestColour.from(data.flattenedColors)
+	type TailwindVersion = 'v2_colors' | 'v3_2_colors' | 'v3_3_colors'
+
+	const tailwindVersions: { id: TailwindVersion; text: string }[] = [
+		{ id: 'v3_3_colors', text: 'v3.3+' },
+		{ id: 'v3_2_colors', text: 'v3.2' },
+		{ id: 'v2_colors', text: 'v2' },
+	]
+
+	let pickedTailwindVersion: TailwindVersion = 'v3_3_colors'
+
+	const colorsMapping = writable(data[pickedTailwindVersion].normalizedColors)
 	let justCopiedColor = ''
 	let pickedGroupName = ''
 	let pickedColorName = ''
@@ -19,6 +28,7 @@
 	$: {
 		if ($pickedColor && colord($pickedColor).isValid()) {
 			try {
+				const getNearestColor = nearestColour.from(data[pickedTailwindVersion].flattenedColors)
 				pickedColorName = getNearestColor($pickedColor).name
 			} catch (e) {
 				console.log('catch error')
@@ -30,7 +40,7 @@
 
 			colorsMapping.set(
 				normalizeColors({
-					[pickedGroupName]: data.rawColors[pickedGroupName],
+					[pickedGroupName]: data[pickedTailwindVersion].rawColors[pickedGroupName],
 				})
 			)
 		}
@@ -38,23 +48,63 @@
 </script>
 
 <svelte:head>
-	<title>TailwindTools — Find the nearest Tailwind Colour</title>
+	<title>TailwindTools — Find the nearest (closest) Tailwind CSS color</title>
+	<meta
+		name="description"
+		content="Find the nearest (closest) color from the Tailwind CSS color palette. Enter color in HEX, RGBA, HSLA, CMYK and get the class name for Tailwind CSS."
+	/>
+	<meta
+		name="keywords"
+		content="tailwindcss, nearest color tailwindcss, nearest color tailwindcss, Tailwind CSS, HEX, RGBA, HSLA, CMYK"
+	/>
+	<link rel="canonical" href="https://tailwindtools.xyz/" />
+	<meta property="og:image" content="https://tailwindtools.xyz/og.png" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta property="twitter:creator" content="@fromaline" />
+	<meta
+		name="twitter:title"
+		content="TailwindTools — Find the nearest (closest) Tailwind CSS color"
+	/>
+	<meta
+		name="twitter:description"
+		content="Find the nearest (closest) color from the Tailwind CSS color palette. Enter color in HEX, RGBA, HSLA, CMYK and get the class name for Tailwind CSS."
+	/>
+	<meta name="twitter:image" content="https://tailwindtools.xyz/og.png" />
 </svelte:head>
 
-<div class="mb-12 flex items-center justify-start">
-	<h1 class="text-2xl">Find the nearest tailwindcss color</h1>
+<div class="container mx-auto mb-12 flex items-end justify-between">
+	<h1 class="mr-2 text-xl font-semibold md:text-2xl">
+		Find the nearest (closest) Tailwind CSS color
+	</h1>
+
+	<div class="form-control w-full max-w-xs">
+		<label class="label" for="tailwindcss-version">
+			<span class="label-text">Tailwind CSS version</span>
+		</label>
+
+		<select
+			class="select select-bordered"
+			bind:value={pickedTailwindVersion}
+			id="tailwindcss-version"
+			name="tailwindcss-version"
+		>
+			{#each tailwindVersions as tailwindVersion}
+				<option value={tailwindVersion.id}>{tailwindVersion.text}</option>
+			{/each}
+		</select>
+	</div>
 </div>
 
-<div class="mb-12 flex w-full flex-col items-center justify-center space-y-3">
+<div class="container mx-auto mb-12 flex flex-col items-center justify-center space-y-3">
 	<ColorPicker />
 
 	<button
 		type="button"
-		class="flex items-center justify-center space-x-2 rounded-md bg-slate-700 px-2 py-1"
+		class="btn"
 		aria-label="Reset colors"
 		on:click={() => {
 			pickedColor.set('')
-			colorsMapping.set(data.normalizedColors)
+			colorsMapping.set(data[pickedTailwindVersion].normalizedColors)
 		}}
 	>
 		<span>Reset</span>
@@ -71,45 +121,19 @@
 				{groupName}
 			</span>
 
-			<div class="mt-3 grid grid-cols-1 gap-x-2 gap-y-3 sm:mt-2 sm:grid-cols-11 2xl:mt-0">
+			<div
+				class="mt-3 grid grid-cols-1 gap-x-2 gap-y-4 sm:mt-2 sm:grid-cols-11 sm:gap-y-3 2xl:mt-0"
+			>
 				{#each Object.entries(groupValue) as [colorName, colorValue]}
 					{@const textColor = colord(colorValue).isDark() ? '#fff' : '#000'}
+					{@const fullColorName = `${groupName}-${colorName}`}
 
 					<div class="relative flex flex-col items-center">
-						{#if groupName !== colorName ? `${groupName}-${colorName}` === pickedColorName : colorName === pickedColorName}
-							<div
-								class="absolute bottom-full left-1/2 mb-3.5 -translate-x-1/2 translate-y-0 scale-100 pb-1 opacity-100"
-							>
-								<div
-									class="relative whitespace-nowrap rounded-lg px-1.5 font-mono text-sm leading-6"
-									style={`background-color: ${colorValue}; color: ${textColor}`}
-								>
-									<span>Nearest color</span>
-
-									<svg
-										aria-hidden="true"
-										width="16"
-										height="6"
-										viewBox="0 0 16 6"
-										class="absolute left-1/2 top-full -ml-2 -mt-px"
-										style={`color: ${colorValue}`}
-									>
-										<path
-											fill-rule="evenodd"
-											clip-rule="evenodd"
-											d="M15 0H1V1.00366V1.00366V1.00371H1.01672C2.72058 1.0147 4.24225 2.74704 5.42685 4.72928C6.42941 6.40691 9.57154 6.4069 10.5741 4.72926C11.7587 2.74703 13.2803 1.0147 14.9841 1.00371H15V0Z"
-											fill="currentColor"
-										></path>
-									</svg>
-								</div>
-							</div>
-						{/if}
-
 						<button
-							class="flex w-full transform-gpu cursor-pointer appearance-none items-center gap-x-3 outline-none transition-transform hover:scale-105 focus-visible:scale-105 sm:block sm:space-y-1.5"
+							class="flex w-full transform-gpu cursor-pointer appearance-none items-center gap-x-3 outline-none transition-transform focus-visible:scale-105 sm:block sm:space-y-1.5 sm:hover:scale-105"
 							on:click={() => {
-								window.navigator.clipboard.writeText(colorValue).then(() => {
-									justCopiedColor = colorValue
+								window.navigator.clipboard.writeText(fullColorName).then(() => {
+									justCopiedColor = fullColorName
 
 									setTimeout(() => {
 										justCopiedColor = ''
@@ -118,24 +142,35 @@
 							}}
 						>
 							<div
-								class="flex h-10 w-10 items-center justify-center rounded text-center dark:ring-1 dark:ring-inset dark:ring-white/10 sm:w-full"
+								class="flex h-10 w-16 items-center justify-center rounded text-center dark:ring-1 dark:ring-inset dark:ring-white/10 sm:w-full"
 								style={`background-color: ${colorValue}`}
 							>
-								{#if justCopiedColor === colorValue}
+								{#if justCopiedColor === fullColorName}
 									<span
 										class="block whitespace-nowrap text-center font-mono text-sm"
 										style={`color: ${textColor}`}
 									>
 										Copied!
 									</span>
+								{:else if groupName !== colorName ? fullColorName === pickedColorName : colorName === pickedColorName}
+									<span
+										class="block whitespace-nowrap text-center font-mono text-sm"
+										style={`color: ${textColor}`}
+									>
+										Nearest
+									</span>
 								{/if}
 							</div>
 
 							<div class="px-0.5">
 								<span
-									class="block w-6 text-xs font-medium text-slate-900 dark:text-white 2xl:w-full"
+									class="block text-start text-xs font-medium text-slate-900 dark:text-white 2xl:w-full"
 								>
-									{colorName}
+									{#if groupName === colorName}
+										{colorName}
+									{:else}
+										{fullColorName}
+									{/if}
 								</span>
 
 								<span
