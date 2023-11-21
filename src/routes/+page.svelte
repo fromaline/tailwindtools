@@ -147,14 +147,14 @@
 							>
 								{#if justCopiedColor === fullColorName}
 									<span
-										class="block whitespace-nowrap text-center font-mono text-sm"
+										class="font-mono block whitespace-nowrap text-center text-sm"
 										style={`color: ${textColor}`}
 									>
 										Copied!
 									</span>
 								{:else if groupName !== colorName ? fullColorName === pickedColorName : colorName === pickedColorName}
 									<span
-										class="block whitespace-nowrap text-center font-mono text-sm"
+										class="font-mono block whitespace-nowrap text-center text-sm"
 										style={`color: ${textColor}`}
 									>
 										Nearest
@@ -174,7 +174,7 @@
 								</span>
 
 								<span
-									class="block text-left font-mono text-xs lowercase text-slate-500 dark:text-slate-400 sm:text-[0.625rem] md:text-xs lg:text-[0.625rem] 2xl:text-xs"
+									class="font-mono block text-left text-xs lowercase text-slate-500 dark:text-slate-400 sm:text-[0.625rem] md:text-xs lg:text-[0.625rem] 2xl:text-xs"
 								>
 									{colorValue}
 								</span>
